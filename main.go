@@ -82,10 +82,6 @@ func init() {
 	rootCmd.Flags().BoolVar(&dryRun, "dry-run", false, "Just print the metadata, ignore real replacement")
 	rootCmd.MarkFlagRequired("cache-file")
 	rootCmd.Execute()
-
-	if cacheFile == "" {
-		os.Exit(1)
-	}
 }
 
 func headerToBytes(buff io.Writer, header textproto.MIMEHeader) {
@@ -289,5 +285,7 @@ func main() {
 		if err := extractCacheBody(); err != nil {
 			log.Fatal(err)
 		}
+	} else {
+		log.Fatal("--data-file or --extract-to-file is missing")
 	}
 }
