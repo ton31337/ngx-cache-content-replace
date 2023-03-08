@@ -11,6 +11,7 @@ import (
 	"mime"
 	"net/textproto"
 	"os"
+	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
@@ -94,7 +95,7 @@ will end up with a new file (secondary).
 2023/03/07 11:10:59 [debug] 917602#917602: *11 cache file: "/var/lib/cache/c/c10efd9e47646b67b9a53c87d7fd333c"
 2023/03/07 11:10:59 [debug] 917602#917602: *11 http upstream cache: -5
 */
-func updateCacheBody(c *os.File, out *os.File, d *os.File) error {
+func updateCacheBody(c *os.File, out *os.File, d *os.File, dInfo fs.FileInfo) error {
 	c.Seek(0, io.SeekStart)
 	d.Seek(0, io.SeekStart)
 
@@ -125,9 +126,9 @@ func updateCacheBody(c *os.File, out *os.File, d *os.File) error {
 	}
 
 	if s := headers.Get("Content-Type"); s == "image/png" {
+		size := strconv.FormatInt(dInfo.Size(), 10)
 		headers.Set("Content-Type", "image/webp")
-		// TODO: Handle size dynamically via CLI arguments or so
-		headers.Set("Content-Length", "9162")
+		headers.Set("Content-Length", size)
 	}
 
 	// Save original data
@@ -176,7 +177,7 @@ func main() {
 	}
 	cStat := cInfo.Sys().(*syscall.Stat_t)
 
-	_, err = os.Stat(dataFile)
+	dInfo, err := os.Stat(dataFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatalf("data file %s\n", dataFile)
@@ -200,7 +201,7 @@ func main() {
 		log.Fatalf("tmp file create: %s\n", err)
 	}
 
-	if err := updateCacheBody(c, tmp, d); err != nil {
+	if err := updateCacheBody(c, tmp, d, dInfo); err != nil {
 		log.Fatalf("updateCacheBody(): %s\n", err)
 	}
 
