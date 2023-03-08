@@ -59,8 +59,6 @@ type Header struct {
 }
 
 func init() {
-	// TODO: CLI option to take be body of the cacheFile, run cwebp and
-	// put generated webp data into the new file as the data (not dataFile).
 	rootCmd.Flags().StringVar(&cacheFile, "cache-file", "", "The Nginx's an existing cache file")
 	rootCmd.Flags().StringVar(&dataFile, "data-file", "", "The data file to replace an existing cached body")
 	rootCmd.Flags().BoolVar(&dryRun, "dry-run", false, "Just print the metadata, ignore real replacement")
