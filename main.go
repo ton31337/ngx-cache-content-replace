@@ -40,6 +40,7 @@ var (
 	cache_key_head = []byte{'\n', 'K', 'E', 'Y', ':', ' '}
 )
 
+// Nginx cache version 5 only is supported
 type Header struct {
 	Version      uint64
 	ValidSec     uint64
